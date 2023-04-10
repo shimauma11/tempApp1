@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load static %}
+{% block nav %}
+{% endblock %}
+{% block main %}
+<div class="container">
+    <a href="{% url 'registration:logout' %}">ログアウト</a>
+    <h1>Mrs.{{ user.username }}</h1>
+</div>
+{% endblock %}
