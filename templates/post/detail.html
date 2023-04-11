@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static %}
+{% block nav %}
+{% endblock %}
+{% block main %}
+<div class="container">
+    {{ post.user }} {{ post.title }}<br>
+    {{ post.content }}<br><br>
+    <a href="{% url 'post:delete' post.pk %}">削除</a>
+</div>
+{% endblock %}
