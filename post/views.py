@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 
@@ -10,20 +10,20 @@ from .models import Post
 User = get_user_model()
 
 
-class HomeView(ListView):
+class HomeView(LoginRequiredMixin, ListView):
     model = Post
     template_name = "post/home.html"
     context_object_name = "postList"
     queryset = model.objects.prefetch_related("user").order_by("-created_at")
 
 
-class PostDetailView(DetailView):
+class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
     template_name = "post/detail.html"
     context_object_name = "post"
 
 
-class CreatePostView(CreateView):
+class CreatePostView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = "post/create.html"
     fields = ["title", "content"]
@@ -34,7 +34,11 @@ class CreatePostView(CreateView):
         return super().form_valid(form)
 
 
-class DeletePostView(DeleteView):
+class DeletePostView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = "post/delete.html"
     success_url = reverse_lazy("post:home")
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.user
