@@ -127,3 +127,12 @@ class TestDeletePost(TestCase):
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Post.objects.filter(pk=self.post01.pk).exists())
+
+
+class TestProfileView(TestCase):
+    def setUp(self):
+        self.url = reverse("post:profile")
+
+    def test_success_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
