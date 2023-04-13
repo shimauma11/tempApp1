@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+{% block nav %}
+{% endblock %}
+{% block main %}
+<div class="container">
+    <form method="POST">
+        {% csrf_token %}
+        <p>削除します</p>
+        <input type="submit" value="削除">
+    </form>
+</div>
+{% endblock %}
