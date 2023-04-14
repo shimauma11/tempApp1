@@ -131,8 +131,71 @@ class TestDeletePost(TestCase):
 
 class TestProfileView(TestCase):
     def setUp(self):
-        self.url = reverse("post:profile")
+        self.user01 = User.objects.create_user(
+            username="testuser01",
+            email="test01@example.com",
+            password="testpassword01",
+        )
+        self.user02 = User.objects.create_user(
+            username="testuser02",
+            email="test02@example.com",
+            password="testpassword02",
+        )
+        self.client.login(username="testuser01", password="testpassword01")
+        Post.objects.create(
+            user=self.user02,
+            title="testtitle",
+            content="testcontent",
+        )
+        self.url = reverse(
+            "post:profile",
+            kwargs={"pk": self.user02.pk, "username": self.user02.username},
+        )
 
     def test_success_get(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+
+
+class TestFollowView(TestCase):
+    def setUp(self):
+        self.user01 = User.objects.create_user(
+            username="testuser01",
+            email="test01@example.com",
+            password="testpassword01",
+        )
+        self.user02 = User.objects.create_user(
+            username="testuser02",
+            email="test02@example.com",
+            password="testpassword02",
+        )
+        Post.objects.create(
+            user=self.user01,
+            title="testtitle",
+            content="testcontent",
+        )
+        Post.objects.create(
+            user=self.user02,
+            title="testtitle",
+            content="testcontent",
+        )
+        self.client.login(username="testuser01", password="testpassword01")
+
+    def test_success_post(self):
+        self.url = reverse(
+            "post:follow",
+            kwargs={"username": self.user01.username, "pk": self.user01.pk},
+        )
+        response = self.client.post(self.url)
+        self.assertRedirects(
+            response,
+            reverse(
+                "post:profile",
+                kwargs={
+                    "username": self.user01.username,
+                    "pk": self.user01.pk,
+                },
+            ),
+            status_code=302,
+            target_status_code=200,
+        )
