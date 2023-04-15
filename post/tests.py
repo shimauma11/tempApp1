@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from .models import Post
+from registration.models import FriendShip
 
 User = get_user_model()
 
@@ -142,14 +143,9 @@ class TestProfileView(TestCase):
             password="testpassword02",
         )
         self.client.login(username="testuser01", password="testpassword01")
-        Post.objects.create(
-            user=self.user02,
-            title="testtitle",
-            content="testcontent",
-        )
         self.url = reverse(
             "post:profile",
-            kwargs={"pk": self.user02.pk, "username": self.user02.username},
+            kwargs={"username": self.user02.username, "pk": self.user02.pk},
         )
 
     def test_success_get(self):
@@ -169,22 +165,12 @@ class TestFollowView(TestCase):
             email="test02@example.com",
             password="testpassword02",
         )
-        Post.objects.create(
-            user=self.user01,
-            title="testtitle",
-            content="testcontent",
-        )
-        Post.objects.create(
-            user=self.user02,
-            title="testtitle",
-            content="testcontent",
-        )
         self.client.login(username="testuser01", password="testpassword01")
 
     def test_success_post(self):
         self.url = reverse(
             "post:follow",
-            kwargs={"username": self.user01.username, "pk": self.user01.pk},
+            kwargs={"username": self.user02.username, "pk": self.user02.pk},
         )
         response = self.client.post(self.url)
         self.assertRedirects(
@@ -192,10 +178,80 @@ class TestFollowView(TestCase):
             reverse(
                 "post:profile",
                 kwargs={
-                    "username": self.user01.username,
-                    "pk": self.user01.pk,
+                    "username": self.user02.username,
+                    "pk": self.user02.pk,
                 },
             ),
             status_code=302,
             target_status_code=200,
         )
+
+    def test_failure_with_not_exist_user(self):
+        self.url = reverse(
+            "post:follow", kwargs={"username": "notexistuser", "pk": 1000}
+        )
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(FriendShip.objects.count(), 0)
+
+    def test_failure_with_self(self):
+        self.url = reverse(
+            "post:follow",
+            kwargs={"username": self.user01.username, "pk": self.user01.pk},
+        )
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(FriendShip.objects.count(), 0)
+
+
+class TestUnFollowView(TestCase):
+    def setUp(self):
+        self.user01 = User.objects.create_user(
+            username="testuser01",
+            email="test01@example.com",
+            password="testpassword01",
+        )
+        self.user02 = User.objects.create_user(
+            username="testuser02",
+            email="test02@example.com",
+            password="testpassword02",
+        )
+        self.client.login(username="testuser01", password="testpassword01")
+        FriendShip.objects.create(follower=self.user01, following=self.user02)
+
+    def test_success_post(self):
+        self.url = reverse(
+            "post:unfollow",
+            kwargs={"username": self.user02.username, "pk": self.user02.pk},
+        )
+        response = self.client.post(self.url)
+        self.assertRedirects(
+            response,
+            reverse(
+                "post:profile",
+                kwargs={
+                    "username": self.user02.username,
+                    "pk": self.user02.pk,
+                },
+            ),
+            status_code=302,
+            target_status_code=200,
+        )
+        self.assertEqual(FriendShip.objects.count(), 0)
+
+    def test_failure_with_not_exist_user(self):
+        self.url = reverse(
+            "post:unfollow", kwargs={"username": "notexistuser", "pk": 1000}
+        )
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(FriendShip.objects.count(), 1)
+
+    def test_failure_with_self(self):
+        self.url = reverse(
+            "post:unfollow",
+            kwargs={"username": self.user01.username, "pk": self.user01.pk},
+        )
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(FriendShip.objects.count(), 1)

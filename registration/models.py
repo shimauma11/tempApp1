@@ -7,21 +7,21 @@ class User(AbstractUser):
 
 
 class FriendShip(models.Model):
-    request_user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="follower",
-    )
-
     follower = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="following",
+        related_name="followings",
+    )
+
+    following = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="followers",
     )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["request_user", "follower"], name="friendship_unique"
+                fields=["follower", "following"], name="friendship_unique"
             ),
         ]

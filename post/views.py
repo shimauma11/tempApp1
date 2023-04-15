@@ -32,17 +32,17 @@ class ProfileView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         ctxt = super().get_context_data(**kwargs)
         pk = self.kwargs["pk"]
-        target_user = get_object_or_404(User, pk=pk)
-        request_user = self.request.user
+        following = get_object_or_404(User, pk=pk)
+        follower = self.request.user
         can_follow = not FriendShip.objects.filter(
-            request_user=request_user, follower=target_user
+            follower=follower, following=following
         )
-        postList = target_user.posts.order_by("-created_at")
+        postList = following.posts.order_by("-created_at")
         ctxt = {
             "postList": postList,
             "can_follow": can_follow,
-            "request_user": request_user,
-            "target_user": target_user
+            "following": following,
+            "follower": follower,
         }
         return ctxt
 
@@ -79,24 +79,22 @@ class FollowView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         username = self.kwargs["username"]
         pk = self.kwargs["pk"]
-        target_user = get_object_or_404(User, pk=pk)
-        request_user = request.user
-        if target_user == request_user:
+        following = get_object_or_404(User, pk=pk)
+        follower = request.user
+        if follower == following:
             messages.add_message(
                 request, messages.ERROR, "you can't do this action"
             )
             return HttpResponseBadRequest("you can't do this action")
 
         if FriendShip.objects.filter(
-            request_user=request_user, follower=target_user
+            follower=follower, following=following
         ).exists():
             messages.add_message(
                 request, messages.ERROR, "you can't do this action"
             )
             return HttpResponseBadRequest("you can't do this action")
-        FriendShip.objects.create(
-            request_user=request_user, follower=target_user
-        )
+        FriendShip.objects.create(follower=follower, following=following)
         return redirect("post:profile", username=username, pk=pk)
 
 
@@ -104,22 +102,20 @@ class UnFollowView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         username = self.kwargs["username"]
         pk = self.kwargs["pk"]
-        request_user = self.request.user
-        target_user = get_object_or_404(User, pk=pk)
-        target_friendship = FriendShip.objects.filter(
-            request_user=request_user, follower=target_user
+        follower = self.request.user
+        following = get_object_or_404(User, pk=pk)
+        friendship = FriendShip.objects.filter(
+            follower=follower, following=following
         )
-        if request_user == target_user:
+        if follower == following:
             messages.add_message(
                 request, messages.ERROR, "you can't do this action"
             )
             return HttpResponseBadRequest("you can't do this action")
-        if not target_friendship.exists():
+        if not friendship.exists():
             messages.add_message(
                 request, messages.ERROR, "you can't do this action"
             )
             return HttpResponseBadRequest("you can't do this action")
-        target_friendship.delete()
+        friendship.delete()
         return redirect("post:profile", username=username, pk=pk)
-
-        
