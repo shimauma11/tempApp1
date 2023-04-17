@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from .models import Post
+from .models import Post, Like
 
 User = get_user_model()
 
@@ -300,3 +300,24 @@ class TestFollowerListView(TestCase):
     def test_success_get(self):
         reponse = self.client.get(self.url)
         self.assertEqual(reponse.status_code, 200)
+
+
+class TestLikeView(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="testusers@example.com",
+            password="testpassword",
+        )
+        self.post = Post.objects.create(
+            user=self.user,
+            title="temptitle",
+            content="testcontent",
+        )
+        self.client.login(username="testuser", password="testpassword")
+        self.url = reverse("post:like", kwargs={"pk": self.post.pk})
+
+    def test_success_get(self):
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Like.objects.filter(user=self.user, post=self.post).exists())

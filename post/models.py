@@ -13,3 +13,19 @@ class Post(models.Model):
     content = models.TextField(max_length=400)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Like(models.Model):
+    user = models.ForeignKey(
+        User, related_name="likes", on_delete=models.CASCADE
+    )
+    post = models.ForeignKey(
+        Post, related_name="likes", on_delete=models.CASCADE
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["post", "user"], name="like_unique"
+            ),
+        ]

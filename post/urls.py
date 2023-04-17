@@ -9,6 +9,8 @@ from .views import (
     UnFollowView,
     FollowListView,
     FollowerListView,
+    LikeView,
+    UnLikeView,
 )
 
 app_name = "post"
@@ -40,4 +42,6 @@ urlpatterns = [
         FollowerListView.as_view(),
         name="followerList",
     ),
+    path("<int:pk>/like/", LikeView.as_view(), name="like"),
+    path("<int:pk>/unlike/", UnLikeView.as_view(), name="unlike"),
 ]

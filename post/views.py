@@ -6,9 +6,9 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, JsonResponse
 
-from .models import Post
+from .models import Post, Like
 
 # Create your views here.
 User = get_user_model()
@@ -19,6 +19,14 @@ class HomeView(LoginRequiredMixin, ListView):
     template_name = "post/home.html"
     context_object_name = "postList"
     queryset = model.objects.prefetch_related("user").order_by("-created_at")
+
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        liked_post_list = Like.objects.filter(
+            user=self.request.user
+        ).values_list("post", flat=True)
+        ctxt["liked_post_list"] = liked_post_list
+        return ctxt
 
 
 class ProfileView(LoginRequiredMixin, ListView):
@@ -121,7 +129,6 @@ class FollowListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         ctxt = super().get_context_data(**kwargs)
-        username = self.kwargs["username"]
         pk = self.kwargs["pk"]
         user = get_object_or_404(User, pk=pk)
         followList = user.following.all()
@@ -138,7 +145,6 @@ class FollowerListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         ctxt = super().get_context_data(**kwargs)
-        username = self.kwargs["username"]
         pk = self.kwargs["pk"]
         user = get_object_or_404(User, pk=pk)
         followerList = user.follower.all()
@@ -147,3 +153,29 @@ class FollowerListView(LoginRequiredMixin, ListView):
             "target_user": user,
         }
         return ctxt
+
+
+class LikeView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        pk = self.kwargs["pk"]
+        post = get_object_or_404(Post, pk=pk)
+        user = self.request.user
+        Like.objects.create(post=post, user=user)
+        like_count = post.likes.count()
+        ctxt = {
+            "like_count": like_count,
+        }
+        return JsonResponse(ctxt)
+
+
+class UnLikeView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        pk = self.kwargs["pk"]
+        post = get_object_or_404(Post, pk=pk)
+        user = self.request.user
+        Like.objects.filter(post=post, user=user).delete()
+        like_count = post.likes.count()
+        ctxt = {
+            "like_count": like_count,
+        }
+        return JsonResponse(ctxt)
