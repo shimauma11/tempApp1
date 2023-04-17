@@ -6,10 +6,10 @@
 <div class="container">
     <a href="{% url 'registration:logout' %}">ログアウト</a>
     <a href="{% url 'post:create' %}">投稿</a>
-    <a href="{% url 'post:profile' %}">{{ user.username }}</a>
     <h1>Mrs.{{ user.username }}</h1>
     {% for post in postList %}
-    {{ post.user }} {{ post.title }}<br>
+    <a href="{% url 'post:profile' post.user.username post.user.pk%}">{{ post.user.username }}</a>
+    {{ post.title }}<br>
     {{ post.content }}<br>
     <a href="{% url 'post:detail' post.pk %}">詳細</a><br><br>
     {% endfor %}

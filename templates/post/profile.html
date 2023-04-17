@@ -6,10 +6,26 @@
 <div class="container">
     <a href="{% url 'registration:logout' %}">ログアウト</a>
     <a href="{% url 'post:create' %}">投稿</a>
-    <h1>Mrs.{{ user.username }}</h1>
+    <a href="{% url 'post:home' %}">ホーム</a>
+    <h1>ようこそ{{ user }}さん、このページは{{ following.username }}さんの投稿です</h1>
+    {% if follower != following %}
+        {% if can_follow %}
+        <form action="{% url 'post:follow' following.username following.pk %}" method="POST">
+            {% csrf_token %}
+            <button>follow</button>
+        </form>
+        {% else %}
+        <form action="{% url 'post:unfollow' following.username following.pk %}" method="POST">
+            {% csrf_token %}
+            <button>unfollow</button>
+        </form>
+        {% endif %}
+    {% endif %}
     {% for post in postList %}
     {{ post.user }} {{ post.title }}<br>
     {{ post.content }}<br>
+    <a href="{% url 'post:followList' post.user.username post.user.pk %}">フォロー: {{ following_count }}</a>
+    <a href="{% url 'post:followerList' post.user.username post.user.pk %}">フォロワーリスト: {{ follower_count }}</a>
     <a href="{% url 'post:detail' post.pk %}">詳細</a><br><br>
     {% endfor %}
 </div>
