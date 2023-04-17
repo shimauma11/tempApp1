@@ -1,6 +1,6 @@
 from django.views import View
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
@@ -9,7 +9,6 @@ from django.contrib import messages
 from django.http import HttpResponseBadRequest
 
 from .models import Post
-from registration.models import FriendShip
 
 # Create your views here.
 User = get_user_model()
@@ -32,17 +31,17 @@ class ProfileView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         ctxt = super().get_context_data(**kwargs)
         pk = self.kwargs["pk"]
-        following = get_object_or_404(User, pk=pk)
+        user = get_object_or_404(User, pk=pk)
         follower = self.request.user
-        can_follow = not FriendShip.objects.filter(
-            follower=follower, following=following
-        )
-        postList = following.posts.order_by("-created_at")
+        can_follow = not follower.following.filter(pk=pk).exists()
+        postList = user.posts.order_by("-created_at")
         ctxt = {
             "postList": postList,
             "can_follow": can_follow,
-            "following": following,
+            "following": user,
             "follower": follower,
+            "following_count": user.following.count(),
+            "follower_count": user.follower.count(),
         }
         return ctxt
 
@@ -79,22 +78,20 @@ class FollowView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         username = self.kwargs["username"]
         pk = self.kwargs["pk"]
-        following = get_object_or_404(User, pk=pk)
-        follower = request.user
-        if follower == following:
+        user = get_object_or_404(User, pk=pk)
+        follower = self.request.user
+        if follower == user:
             messages.add_message(
                 request, messages.ERROR, "you can't do this action"
             )
             return HttpResponseBadRequest("you can't do this action")
 
-        if FriendShip.objects.filter(
-            follower=follower, following=following
-        ).exists():
+        if follower.following.filter(username=username).exists():
             messages.add_message(
                 request, messages.ERROR, "you can't do this action"
             )
             return HttpResponseBadRequest("you can't do this action")
-        FriendShip.objects.create(follower=follower, following=following)
+        follower.following.add(user)
         return redirect("post:profile", username=username, pk=pk)
 
 
@@ -102,20 +99,51 @@ class UnFollowView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         username = self.kwargs["username"]
         pk = self.kwargs["pk"]
+        user = get_object_or_404(User, pk=pk)
         follower = self.request.user
-        following = get_object_or_404(User, pk=pk)
-        friendship = FriendShip.objects.filter(
-            follower=follower, following=following
-        )
-        if follower == following:
+        if follower == user:
             messages.add_message(
                 request, messages.ERROR, "you can't do this action"
             )
             return HttpResponseBadRequest("you can't do this action")
-        if not friendship.exists():
+        if not follower.following.filter(username=username).exists():
             messages.add_message(
                 request, messages.ERROR, "you can't do this action"
             )
             return HttpResponseBadRequest("you can't do this action")
-        friendship.delete()
+        follower.following.remove(user)
         return redirect("post:profile", username=username, pk=pk)
+
+
+class FollowListView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = "post/followList.html"
+
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        username = self.kwargs["username"]
+        pk = self.kwargs["pk"]
+        user = get_object_or_404(User, pk=pk)
+        followList = user.following.all()
+        ctxt = {
+            "followList": followList,
+            "target_user": user,
+        }
+        return ctxt
+
+
+class FollowerListView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = "post/followerList.html"
+
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        username = self.kwargs["username"]
+        pk = self.kwargs["pk"]
+        user = get_object_or_404(User, pk=pk)
+        followerList = user.follower.all()
+        ctxt = {
+            "followerList": followerList,
+            "target_user": user,
+        }
+        return ctxt

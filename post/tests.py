@@ -2,7 +2,6 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from .models import Post
-from registration.models import FriendShip
 
 User = get_user_model()
 
@@ -192,7 +191,7 @@ class TestFollowView(TestCase):
         )
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(FriendShip.objects.count(), 0)
+        self.assertEqual(self.user01.following.count(), 0)
 
     def test_failure_with_self(self):
         self.url = reverse(
@@ -201,7 +200,7 @@ class TestFollowView(TestCase):
         )
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(FriendShip.objects.count(), 0)
+        self.assertEqual(self.user01.following.count(), 0)
 
 
 class TestUnFollowView(TestCase):
@@ -217,7 +216,7 @@ class TestUnFollowView(TestCase):
             password="testpassword02",
         )
         self.client.login(username="testuser01", password="testpassword01")
-        FriendShip.objects.create(follower=self.user01, following=self.user02)
+        self.user01.following.add(self.user02)
 
     def test_success_post(self):
         self.url = reverse(
@@ -237,7 +236,7 @@ class TestUnFollowView(TestCase):
             status_code=302,
             target_status_code=200,
         )
-        self.assertEqual(FriendShip.objects.count(), 0)
+        self.assertEqual(self.user01.following.count(), 0)
 
     def test_failure_with_not_exist_user(self):
         self.url = reverse(
@@ -245,7 +244,7 @@ class TestUnFollowView(TestCase):
         )
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(FriendShip.objects.count(), 1)
+        self.assertEqual(self.user01.following.count(), 1)
 
     def test_failure_with_self(self):
         self.url = reverse(
@@ -254,4 +253,50 @@ class TestUnFollowView(TestCase):
         )
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(FriendShip.objects.count(), 1)
+        self.assertEqual(self.user01.following.count(), 1)
+
+
+class TestFollowListView(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="testusers@example.com",
+            password="testpassword",
+        )
+        self.user02 = User.objects.create_user(
+            username="testuser02",
+            email="testusers02@example.com",
+            password="testpassword02",
+        )
+        self.client.login(username="testuser02", password="testpassword02")
+        self.url = reverse(
+            "post:followList",
+            kwargs={"username": self.user.username, "pk": self.user.pk},
+        )
+
+    def test_success_get(self):
+        reponse = self.client.get(self.url)
+        self.assertEqual(reponse.status_code, 200)
+
+
+class TestFollowerListView(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            email="testusers@example.com",
+            password="testpassword",
+        )
+        self.user02 = User.objects.create_user(
+            username="testuser02",
+            email="testusers02@example.com",
+            password="testpassword02",
+        )
+        self.client.login(username="testuser02", password="testpassword02")
+        self.url = reverse(
+            "post:followerList",
+            kwargs={"username": self.user.username, "pk": self.user.pk},
+        )
+
+    def test_success_get(self):
+        reponse = self.client.get(self.url)
+        self.assertEqual(reponse.status_code, 200)
