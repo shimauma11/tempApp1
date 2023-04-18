@@ -11,6 +11,7 @@
     <a href="{% url 'post:profile' post.user.username post.user.pk%}">{{ post.user.username }}</a>
     {{ post.title }}<br>
     {{ post.content }}<br>
+    {% include "_like.html" %}
     <a href="{% url 'post:detail' post.pk %}">詳細</a><br><br>
     {% endfor %}
 </div>
