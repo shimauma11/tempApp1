@@ -7,6 +7,11 @@
     <a href="{% url 'post:home' %}">ホーム</a>
     <a href="{% url 'post:profile' post.user.username post.user.pk %}">{{ post.user.username }}</a><br>
     {{ post.title }}<br>
+    {% if is_liked %}
+    <a onclick="likeFunc(event)" id="{{ post.pk }}" type="button" data-id="{{ post.pk }}" data-is_liked="true">いいね: {{post.likes.count }}</a>
+    {% else %}
+    <a onclick="likeFunc(event)" id="{{ post.pk }}" type="button" data-id="{{ post.pk }}" data-is_liked="false">いいね: {{post.likes.count }}</a>
+    {% endif %}
     {{ post.content }}<br><br>
 </div>
 {% endblock %}

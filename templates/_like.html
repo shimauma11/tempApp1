@@ -1,0 +1,5 @@
+{% if post.id in liked_post_list %}
+<a onclick="likeFunc(event)" id="{{ post.pk }}" type="button" data-id="{{ post.pk }}" data-is_liked="true">いいね: {{post.likes.count }}</a>
+{% else %}
+<a onclick="likeFunc(event)" id="{{ post.pk }}" type="button" data-id="{{ post.pk }}" data-is_liked="false">いいね: {{post.likes.count }}</a>
+{% endif %}

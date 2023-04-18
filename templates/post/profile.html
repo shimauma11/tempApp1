@@ -26,6 +26,7 @@
     {{ post.content }}<br>
     <a href="{% url 'post:followList' post.user.username post.user.pk %}">フォロー: {{ following_count }}</a>
     <a href="{% url 'post:followerList' post.user.username post.user.pk %}">フォロワーリスト: {{ follower_count }}</a>
+    {% include "_like.html" %}
     <a href="{% url 'post:detail' post.pk %}">詳細</a><br><br>
     {% endfor %}
 </div>

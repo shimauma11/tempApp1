@@ -43,6 +43,9 @@ class ProfileView(LoginRequiredMixin, ListView):
         follower = self.request.user
         can_follow = not follower.following.filter(pk=pk).exists()
         postList = user.posts.order_by("-created_at")
+        liked_post_list = Like.objects.filter(user=follower).values_list(
+            "post", flat=True
+        )
         ctxt = {
             "postList": postList,
             "can_follow": can_follow,
@@ -50,6 +53,7 @@ class ProfileView(LoginRequiredMixin, ListView):
             "follower": follower,
             "following_count": user.following.count(),
             "follower_count": user.follower.count(),
+            "liked_post_list": liked_post_list,
         }
         return ctxt
 
@@ -57,7 +61,16 @@ class ProfileView(LoginRequiredMixin, ListView):
 class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
     template_name = "post/detail.html"
-    context_object_name = "post"
+
+    def get_context_data(self, **kwargs):
+        ctxt = super().get_context_data(**kwargs)
+        pk = self.kwargs["pk"]
+        post = get_object_or_404(Post, pk=pk)
+        user = self.request.user
+        is_liked = Like.objects.filter(user=user, post=post).exists()
+        ctxt["is_liked"] = is_liked
+        ctxt["post"] = post
+        return ctxt
 
 
 class CreatePostView(LoginRequiredMixin, CreateView):
