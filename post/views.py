@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.http import HttpResponseBadRequest, JsonResponse
 
-from .models import Post, Like
+from .models import Post, Like, Comment
 
 # Create your views here.
 User = get_user_model()
@@ -192,3 +192,17 @@ class UnLikeView(LoginRequiredMixin, View):
             "like_count": like_count,
         }
         return JsonResponse(ctxt)
+
+
+class CommentView(LoginRequiredMixin, CreateView):
+    model = Comment
+    fields = ('content',)
+    template_name = "post/comment.html"
+    success_url = reverse_lazy("post:home")
+
+    def form_valid(self, form):
+        post = get_object_or_404(Post, pk=self.kwargs["pk"])
+        user = self.request.user
+        form.instance.post = post
+        form.instance.user = user
+        return super().form_valid(form)

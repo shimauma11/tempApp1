@@ -29,3 +29,14 @@ class Like(models.Model):
                 fields=["post", "user"], name="like_unique"
             ),
         ]
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(
+        User, related_name="comments", on_delete=models.CASCADE
+    )
+    post = models.ForeignKey(
+        Post, related_name="comments", on_delete=models.CASCADE
+    )
+    content = models.TextField(max_length=300)
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block main %}
-<div class="container">
+<div class="container special_container">
     {% include "_nav.html" %}
     <div class="post_box">
         <a class="post_author" href="{% url 'post:profile' post.user.username post.user.pk %}">{{ post.user.username }}</a>

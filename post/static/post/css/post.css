@@ -68,3 +68,7 @@
     width: 35%;
     margin: 0 auto;
 }
+
+.special_container{
+    height: 100vh;
+}

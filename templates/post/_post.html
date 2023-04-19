@@ -19,5 +19,11 @@
             </li>
         </ul>
     </div>
-
+    <a href="{% url 'post:comment' post.pk %}">コメント</a>
+    {% if post.comments.all %}
+    {% for comment in post.comments.all %}
+    <p>{{ comment.content }}</p>
+    {% endfor %}
+    {% endif %}
+    
 </div>
