@@ -1,17 +1,24 @@
 {% extends "base.html" %}
 {% load static %}
-{% block nav %}
-{% endblock %}
 {% block main %}
 <div class="container">
-    <a href="{% url 'post:home' %}">ホーム</a>
-    <a href="{% url 'post:profile' post.user.username post.user.pk %}">{{ post.user.username }}</a><br>
-    {{ post.title }}<br>
-    {% if is_liked %}
-    <a onclick="likeFunc(event)" id="{{ post.pk }}" type="button" data-id="{{ post.pk }}" data-is_liked="true">いいね: {{post.likes.count }}</a>
-    {% else %}
-    <a onclick="likeFunc(event)" id="{{ post.pk }}" type="button" data-id="{{ post.pk }}" data-is_liked="false">いいね: {{post.likes.count }}</a>
-    {% endif %}
-    {{ post.content }}<br><br>
+    {% include "_nav.html" %}
+    <div class="post_box">
+        <a class="post_author" href="{% url 'post:profile' post.user.username post.user.pk %}">{{ post.user.username }}</a>
+        <div class="text_container">
+            <p>title: {{ post.title }}</p>
+            <p>{{ post.content }}</p>
+        </div>
+        <div class="d-flex justify-content-between">
+            {% if is_liked %}
+            <a class="like" onclick="likeFunc(event)" id="{{ post.pk }}" type="button" data-id="{{ post.pk }}"
+                data-is_liked="true">いいね {{post.likes.count }}</a>
+            {% else %}
+            <a class="like" onclick="likeFunc(event)" id="{{ post.pk }}" type="button" data-id="{{ post.pk }}"
+                data-is_liked="false">いいね {{post.likes.count }}</a>
+            {% endif %}
+        </div>
+    </div>
+    <button type="button" class="btn btn-success tempApp_btn float-end"><a href="{% url 'post:home' %}">戻る</a></button>
 </div>
 {% endblock %}

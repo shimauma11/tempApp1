@@ -1,0 +1,51 @@
+/* post部分　*/
+
+.post_box {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 20px 50px;
+    border: 3px solid rgb(90, 90, 90);
+    border-radius: 5px;
+}
+
+.post_box:hover{
+    background-color: rgb(25, 25, 25);
+}
+
+.post_author {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.text_container p{
+    color: white;
+}
+
+.follow_follower_list{
+    width: 50%;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.follow_follower_list .tempApp_btn{
+    margin-left: 20px;
+}
+
+.list_container{
+    width: 50%;
+    height: 50px;
+    line-height: 50px;
+    padding: 0px 30px;
+    border: 3px solid rgb(90, 90, 90);
+    border-radius: 5px;
+    margin: 0px auto 10px 0px;
+}
+
+.list_container:hover{
+    background-color: rgb(25, 25, 25);
+}
+
+.lists_container{
+    width: 80%;
+    margin: 0 auto;
+}

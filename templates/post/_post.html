@@ -1,0 +1,11 @@
+<div class="post_box">
+    <a class="post_author" href="{% url 'post:profile' post.user.username post.user.pk%}">{{ post.user.username }}</a>
+    <div class="text_container">
+        <p>title :{{ post.title }}</p>
+        <p>{{ post.content }}</p>
+    </div>
+    <div class="d-flex justify-content-between">
+        {% include "post/_like.html" %}
+        <button type="button" class="btn btn-success tempApp_btn"><a href="{% url 'post:detail' post.pk %}">詳細</a></button>
+    </div>
+</div>

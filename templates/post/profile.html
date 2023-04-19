@@ -1,13 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
-{% block nav %}
-{% endblock %}
 {% block main %}
 <div class="container">
-    <a href="{% url 'registration:logout' %}">ログアウト</a>
-    <a href="{% url 'post:create' %}">投稿</a>
-    <a href="{% url 'post:home' %}">ホーム</a>
-    <h1>ようこそ{{ user }}さん、このページは{{ following.username }}さんの投稿です</h1>
+    {% include "_nav.html" %}
+    <h1 class="profile_username">{{ user.username }}さんのプロフィール</h1>
     {% if follower != following %}
         {% if can_follow %}
         <form action="{% url 'post:follow' following.username following.pk %}" method="POST">
@@ -21,13 +17,12 @@
         </form>
         {% endif %}
     {% endif %}
+    <div class="follow_follower_list">
+        <button type="button" class="btn btn-success tempApp_btn"><a href="{% url 'post:followList' user.username user.pk %}">フォロー {{ following_count }}</a></button>
+        <button type="button" class="btn btn-success tempApp_btn"><a href="{% url 'post:followerList' user.username user.pk %}">フォロワー {{ follower_count }}</a></button>
+    </div>
     {% for post in postList %}
-    {{ post.user }} {{ post.title }}<br>
-    {{ post.content }}<br>
-    <a href="{% url 'post:followList' post.user.username post.user.pk %}">フォロー: {{ following_count }}</a>
-    <a href="{% url 'post:followerList' post.user.username post.user.pk %}">フォロワーリスト: {{ follower_count }}</a>
-    {% include "_like.html" %}
-    <a href="{% url 'post:detail' post.pk %}">詳細</a><br><br>
+    {% include "post/_post.html" %}
     {% endfor %}
 </div>
 {% endblock %}

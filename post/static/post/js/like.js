@@ -52,7 +52,7 @@ async function likeFunc(event) {
         } else {
             el.dataset.is_liked = "true";
         }
-        el.textContent = "いいね: " + String(data.like_count);
+        el.textContent = "いいね " + String(data.like_count);
     } catch (error) {
         console.log(error);
     }

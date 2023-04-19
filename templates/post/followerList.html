@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
-{% block nav %}
-{% endblock %}
 {% block main %}
 <div class="container">
-    <a href="{% url 'registration:logout' %}">ログアウト</a>
-    <a href="{% url 'post:create' %}">投稿</a>
-    <h1>{{ target_user }}さんのフォロワー一覧</h1>
-    {% for follower in followerList %}
-    <a href="{% url 'post:profile' follower.username follower.pk%}">{{ follower.username }}</a>
-    {% endfor %}
+    {% include "_nav.html" %}
+    <h1>{{ target_user }}さんのフォロワ一覧</h1>
+    <div class="lists_container">
+        {% for follower in followerList %}
+        <div class="list_container">
+            <a href="{% url 'post:profile' follower.username follower.pk%}">{{ follower.username }}</a>
+        </div>
+        {% endfor %}
+        <button type="button" class="btn btn-success tempApp_btn float-end"><a href="{% url 'post:profile' target_user.username target_user.pk %}">戻る</a></button>
+    </div>
 </div>
 {% endblock %}
