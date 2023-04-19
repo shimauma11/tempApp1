@@ -2,10 +2,11 @@
 {% load static %}
 {% block main %}
 <div class="container">
-    <form method="POST">
+    <form class="delete_form" method="POST">
         {% csrf_token %}
-        <p>削除します</p>
-        <input type="submit" value="削除">
+        <h1 class="delete-h1">削除します</h1>
+        <button type="submit" class="btn-danger btn">削除</button>
+        <button type="button" class="btn btn-success tempApp_btn float-end"><a href="{% url 'post:home' %}">戻る</a></button>
     </form>
 </div>
 {% endblock %}

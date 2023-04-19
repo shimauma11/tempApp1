@@ -49,3 +49,22 @@
     width: 80%;
     margin: 0 auto;
 }
+
+.delete_btn{
+    margin-left: 10px !important;
+}
+
+.delete_form{
+    width: 35%;
+    margin: 0 auto;
+    padding-top: 100px;
+}
+
+.delete-h1{
+    color: white;
+}
+
+.create_div{
+    width: 35%;
+    margin: 0 auto;
+}

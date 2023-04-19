@@ -2,8 +2,10 @@
 {% load static %}
 {% block main %}
 <div class="container">
-{% include "_nav.html" %}
-{% include "_form.html" with submit_label="投稿" %}
-<button type="button" class="btn btn-success tempApp_btn"><a href="{% url 'post:home' %}">戻る</a></button>
+    {% include "_nav.html" %}
+    {% include "_form.html" with submit_label="投稿" %}
+    <div class="create_div">
+        <button type="button" class="btn btn-success tempApp_btn"><a href="{% url 'post:home' %}">戻る</a></button>
+    </div>
 </div>
 {% endblock %}

@@ -5,24 +5,27 @@
     {% include "_nav.html" %}
     <h1 class="profile_username">{{ user.username }}さんのプロフィール</h1>
     {% if follower != following %}
-        {% if can_follow %}
-        <form action="{% url 'post:follow' following.username following.pk %}" method="POST">
-            {% csrf_token %}
-            <button>follow</button>
-        </form>
-        {% else %}
-        <form action="{% url 'post:unfollow' following.username following.pk %}" method="POST">
-            {% csrf_token %}
-            <button>unfollow</button>
-        </form>
-        {% endif %}
+    {% if can_follow %}
+    <form action="{% url 'post:follow' following.username following.pk %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success tempApp_btn">follow</button>
+    </form>
+    {% else %}
+    <form action="{% url 'post:unfollow' following.username following.pk %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success tempApp_btn">unfollow</button>
+    </form>
+    {% endif %}
     {% endif %}
     <div class="follow_follower_list">
-        <button type="button" class="btn btn-success tempApp_btn"><a href="{% url 'post:followList' user.username user.pk %}">フォロー {{ following_count }}</a></button>
-        <button type="button" class="btn btn-success tempApp_btn"><a href="{% url 'post:followerList' user.username user.pk %}">フォロワー {{ follower_count }}</a></button>
+        <button type="button" class="btn btn-success tempApp_btn"><a
+                href="{% url 'post:followList' user.username user.pk %}">フォロー {{ following_count }}</a></button>
+        <button type="button" class="btn btn-success tempApp_btn"><a
+                href="{% url 'post:followerList' user.username user.pk %}">フォロワー {{ follower_count }}</a></button>
     </div>
     {% for post in postList %}
     {% include "post/_post.html" %}
     {% endfor %}
+    <button type="button" class="btn btn-success tempApp_btn float-end"><a href="{% url 'post:home' %}">戻る</a></button>
 </div>
 {% endblock %}
