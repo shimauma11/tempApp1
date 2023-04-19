@@ -1,18 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
-{% block nav %}
-{% endblock %}
 {% block main %}
 <div class="container">
-    <a href="{% url 'registration:logout' %}">ログアウト</a>
-    <a href="{% url 'post:create' %}">投稿</a>
-    <h1>Mrs.{{ user.username }}</h1>
+    {% include "_nav.html" %}
+    <h1>ようこそ、{{ user.username }}さん🎉</h1>
     {% for post in postList %}
-    <a href="{% url 'post:profile' post.user.username post.user.pk%}">{{ post.user.username }}</a>
-    {{ post.title }}<br>
-    {{ post.content }}<br>
-    {% include "_like.html" %}
-    <a href="{% url 'post:detail' post.pk %}">詳細</a><br><br>
+    {% include "post/_post.html" %}
     {% endfor %}
 </div>
 {% endblock %}

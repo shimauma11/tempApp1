@@ -1,0 +1,86 @@
+/* 共通部分　*/
+p {
+    color: green;
+}
+
+li {
+    list-style: none;
+}
+
+h1 {
+    color: green;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover{
+    color: white;
+}
+
+.background {
+    background-color: rgb(0, 0, 0);
+    height: 1000px;
+}
+
+.nav-original{
+    background-color: black;
+    height: 50px;
+    padding: 0 !important;
+    margin-bottom: 60px;
+    line-height: 50px;
+    
+}
+
+.nav-original-contain{
+    background-color: black;
+    height: 100%;
+}
+
+.logout{
+    color: green;
+}
+
+.logout:hover{
+    color: rgb(65, 159, 65);
+}
+
+.logo{
+    color: green;
+}
+
+.logo:hover{
+    color: rgb(65, 159, 65);
+}
+
+.container h1{
+    margin-bottom: 30px;
+}
+
+.tempApp_btn{
+    background-color: green !important;
+    margin-bottom: 20px;
+}
+
+.tempApp_btn:hover{
+    background-color: rgb(65, 159, 65) !important;
+}
+
+.nav_item{
+    color: green;
+    margin-left: 20px;
+}
+
+.nav_item:hover{
+    color: rgb(65, 159, 65);
+}
+.registration_container{
+    padding-top: 100px;
+}
+
+.registration_form{
+    width: 35%;
+    margin: 0 auto;
+}

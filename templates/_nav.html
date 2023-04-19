@@ -1,0 +1,10 @@
+<nav class="navbar navbar-light bg-light nav-original">
+    <div class="container-fluid d-flex nav-original-contain">
+        <p><a class="logo" href="{% url 'post:home' %}">tempApp1</a></p>
+        <ul class="d-flex">
+            <li><a class="post_create nav_item" href="{% url 'post:create' %}">投稿</a></li>
+            <li><a class="nav_item" href="{% url 'post:profile' user.username user.pk %}">{{ user.username }}</a></li>
+            <li><a class="logout nav_item" href="{% url 'registration:logout' %}">ログアウト</a></li>
+        </ul>
+    </div>
+</nav> 
