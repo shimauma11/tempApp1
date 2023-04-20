@@ -19,11 +19,22 @@
             </li>
         </ul>
     </div>
-    <a href="{% url 'post:comment' post.pk %}">コメント</a>
+    <button type="button" class="btn btn-success tempApp_btn"><a href="{% url 'post:comment' post.pk %}">コメント</a></button>
+    <p class="show_comment_button">
+        <button type="button" class="btn btn-success tempApp_btn" data-bs-toggle="collapse" data-bs-target="#comments_{{ post.pk }}" aria-expanded="false" aria-controls="comments_{{ post.pk }}">
+            コメント表示
+        </button>
+    </p>
     {% if post.comments.all %}
-    {% for comment in post.comments.all %}
-    <p>{{ comment.content }}</p>
-    {% endfor %}
+    <div class="collapse comment_box" id="comments_{{ post.pk }}">
+        {% for comment in post.comments.all %}
+        <a href="{% url 'post:profile' comment.user.username comment.user.pk %}">
+            {{ comment.user.username }} <span class="comment_time">{{ comment.created_at }}</span>
+        </a>
+        <p>{{ comment.content }}</p>
+        {% include "post/_like_for_comment.html" %}
+        {% endfor %}
+    </div>
     {% endif %}
-    
+
 </div>
