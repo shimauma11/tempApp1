@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.http import HttpResponseBadRequest, JsonResponse
 
-from .models import Post, Like
+from .models import Post, Like, Comment, Like_for_comment
 
 # Create your views here.
 User = get_user_model()
@@ -25,7 +25,11 @@ class HomeView(LoginRequiredMixin, ListView):
         liked_post_list = Like.objects.filter(
             user=self.request.user
         ).values_list("post", flat=True)
+        liked_comment_list = Like_for_comment.objects.filter(
+            user=self.request.user
+        ).values_list("comment", flat=True)
         ctxt["liked_post_list"] = liked_post_list
+        ctxt["liked_comment_list"] = liked_comment_list
         return ctxt
 
 
@@ -192,3 +196,40 @@ class UnLikeView(LoginRequiredMixin, View):
             "like_count": like_count,
         }
         return JsonResponse(ctxt)
+
+
+class CommentView(LoginRequiredMixin, CreateView):
+    model = Comment
+    fields = ("content",)
+    template_name = "post/comment.html"
+    success_url = reverse_lazy("post:home")
+
+    def form_valid(self, form):
+        post = get_object_or_404(Post, pk=self.kwargs["pk"])
+        user = self.request.user
+        form.instance.post = post
+        form.instance.user = user
+        return super().form_valid(form)
+
+
+class Like_for_commentView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        pk = self.kwargs["pk"]
+        comment = get_object_or_404(Comment, pk=pk)
+        user = self.request.user
+        Like_for_comment.objects.create(user=user, comment=comment)
+        like_for_comment_count = comment.likes_for_comment.count()
+        ctxt = {"like_for_comment_count": like_for_comment_count}
+        return JsonResponse(ctxt)
+
+
+class Unlike_for_commentView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        pk = self.kwargs["pk"]
+        comment = get_object_or_404(Comment, pk=pk)
+        user = self.request.user
+        Like_for_comment.objects.filter(user=user, comment=comment).delete()
+        like_for_comment_count = comment.likes_for_comment.count()
+        ctxt = {"like_for_comment_count": like_for_comment_count}
+        return JsonResponse(ctxt)
+    

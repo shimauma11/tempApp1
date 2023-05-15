@@ -29,3 +29,30 @@ class Like(models.Model):
                 fields=["post", "user"], name="like_unique"
             ),
         ]
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(
+        User, related_name="comments", on_delete=models.CASCADE
+    )
+    post = models.ForeignKey(
+        Post, related_name="comments", on_delete=models.CASCADE
+    )
+    content = models.TextField(max_length=300)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Like_for_comment(models.Model):
+    user = models.ForeignKey(
+        User, related_name="likes_for_comment", on_delete=models.CASCADE
+    )
+    comment = models.ForeignKey(
+        Comment, related_name="likes_for_comment", on_delete=models.CASCADE
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "comment"], name="like_for_comment_unique"
+            ),
+        ]

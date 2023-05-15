@@ -57,3 +57,51 @@ async function likeFunc(event) {
         console.log(error);
     }
 };
+
+
+async function like_for_comment_Func(event) {
+    event.preventDefault();
+    const el = event.target;
+    const id = el.dataset.id;
+    let url = "";
+    if (el.dataset.is_liked == "true") {
+        url = "/post/" + id + "/unlike_comment/";
+    } else {
+        url = "/post/" + id + "/like_comment/";
+    }
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+                'X-CSRFToken': csrftoken,
+            },
+        })
+
+        if (!response.ok) {
+            switch (response.status) {
+                case 400:
+                    throw new Error('400 error');
+                case 401:
+                    throw new Error('401 error');
+                case 404:
+                    throw new Error('404 error');
+                case 500:
+                    throw new Error('500 error');
+                default:
+                    throw new Error('something error');
+            }
+        }
+
+        const data = await response.json();
+
+        if (el.dataset.is_liked == "true") {
+            el.dataset.is_liked = "false";
+        } else {
+            el.dataset.is_liked = "true";
+        }
+        el.textContent = "いいね " + String(data.like_for_comment_count);
+    } catch (error) {
+        console.log(error);
+    }
+};

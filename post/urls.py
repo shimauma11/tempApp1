@@ -11,7 +11,11 @@ from .views import (
     FollowerListView,
     LikeView,
     UnLikeView,
+    CommentView,
+    Like_for_commentView,
+    Unlike_for_commentView,
 )
+
 
 app_name = "post"
 urlpatterns = [
@@ -44,4 +48,7 @@ urlpatterns = [
     ),
     path("<int:pk>/like/", LikeView.as_view(), name="like"),
     path("<int:pk>/unlike/", UnLikeView.as_view(), name="unlike"),
+    path("comment/<int:pk>/", CommentView.as_view(), name="comment"),
+    path("<int:pk>/like_comment/", Like_for_commentView.as_view(), name="like_for_comment"),
+    path("<int:pk>/unlike_comment/", Unlike_for_commentView.as_view(), name="unlike_for_comment"),
 ]

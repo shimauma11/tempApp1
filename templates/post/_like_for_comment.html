@@ -1,0 +1,5 @@
+{% if comment.id in liked_comment_list %}
+<p><a class="like" onclick="like_for_comment_Func(event)" id="{{ comment.pk }}" type="button" data-id="{{ comment.pk }}" data-is_liked="true">いいね {{ comment.likes_for_comment.count }}</a></p>
+{% else %}
+<p><a class="like" onclick="like_for_comment_Func(event)" id="{{ comment.pk }}" type="button" data-id="{{ comment.pk }}" data-is_liked="false">いいね {{ comment.likes_for_comment.count }}</a></p>
+{% endif %}
